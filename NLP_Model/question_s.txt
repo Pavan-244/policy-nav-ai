@@ -1,0 +1,37 @@
+"diabetes management and insulin therapy"
+
+"cancer chemotherapy treatment protocols"
+
+"obesity diet and exercise recommendations"
+
+"cardiac surgery patient care"
+
+"patients treated by Dr. Matthew Smith"
+
+"cases handled by Dr. Tiffany Mitchell for obesity"
+
+"Dr. Kevin Wells diabetes patients"
+
+"patients admitted to Sons and Miller hospital"
+
+"cases in Kim Inc with urgent admission"
+
+"patients in White-White hospital taking Penicillin"
+
+"patients using Ibuprofen for pain relief"
+
+"Paracetamol treatment for urgent admissions"
+
+"Aspirin prescription for elderly patients"
+
+"diabetes patients treated with insulin in Sons and Miller"
+
+"cancer chemotherapy patients under Dr. Kathleen Hanna"
+
+"obesity management using exercise and diet in Cook PLC"
+
+"emergency admissions for heart problems"
+
+"urgent cancer patient treatment"
+
+"elective surgery cases for diabetes"

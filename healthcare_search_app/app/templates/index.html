@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Healthcare Record Search</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Healthcare Record Search</h1>
+    <form id="searchForm">
+        <label>Query: <input name="query" required></label><br>
+        <label>Top K: <input name="top_k" value="3" type="number" min="1" max="10"></label><br>
+        <label>Condition: <input name="condition"></label><br>
+        <label>Doctor: <input name="doctor"></label><br>
+        <label>Hospital: <input name="hospital"></label><br>
+        <button type="submit">Search</button>
+    </form>
+    <hr>
+    <div id="results"></div>
+    <script>
+        document.getElementById('searchForm').onsubmit = async function(e) {
+            e.preventDefault();
+            let form = new FormData(this);
+            let url = `/search?` + new URLSearchParams(form).toString();
+            let res = await fetch(url);
+            let data = await res.json();
+            let resultsDiv = document.getElementById('results');
+            if (data.results.length === 0) {
+                resultsDiv.innerHTML = "<p>No matching records found.</p>";
+            } else {
+                resultsDiv.innerHTML = data.results.map((r, i) =>
+                    `<div class="result">
+                        <h2>Result #${i + 1}</h2>
+                        <ul>
+                          <li><b>Name:</b> ${r.Name}</li>
+                          <li><b>Age:</b> ${r.Age}</li>
+                          <li><b>Gender:</b> ${r.Gender}</li>
+                          <li><b>Blood Type:</b> ${r["Blood Type"]}</li>
+                          <li><b>Medical Condition:</b> ${r["Medical Condition"]}</li>
+                          <li><b>Date of Admission:</b> ${r["Date of Admission"]}</li>
+                          <li><b>Doctor:</b> ${r.Doctor}</li>
+                          <li><b>Hospital:</b> ${r.Hospital}</li>
+                          <li><b>Insurance Provider:</b> ${r["Insurance Provider"]}</li>
+                          <li><b>Billing Amount:</b> ${r["Billing Amount"]}</li>
+                          <li><b>Room Number:</b> ${r["Room Number"]}</li>
+                          <li><b>Admission Type:</b> ${r["Admission Type"]}</li>
+                          <li><b>Discharge Date:</b> ${r["Discharge Date"]}</li>
+                          <li><b>Medication:</b> ${r.Medication}</li>
+                          <li><b>Test Results:</b> ${r["Test Results"]}</li>
+                          <li><b>Similarity Score:</b> ${r.Similarity.toFixed(3)}</li>
+                        </ul>
+                    </div>`
+                ).join('');
+            }
+        };
+    </script>
+</body>
+</html>

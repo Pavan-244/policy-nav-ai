@@ -24,7 +24,7 @@ Modern responsive web design
 API endpoints for custom integrations
 
 Folder Structure
-text
+
 healthcare_search_app/
 │
 ├── app/
@@ -44,6 +44,8 @@ healthcare_search_app/
 │   ├── requirements.txt       # All Python dependencies
 │
 └── README.md                  # Project documentation
+
+
 Setup Instructions
 1. Clone or Download Project
 text
@@ -92,6 +94,7 @@ Endpoint	Description
 /visualizations	Interactive chart dashboard (HTML, JS)
 /api/chart-data	REST API for chart data (used by Chart.js)
 /api/billing-stats	REST API for histogram data (used by D3.js)
+
 Customization Guide
 Add dropdown options: Edit <select>s in index.html to match your dataset values
 

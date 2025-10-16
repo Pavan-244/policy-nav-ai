@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial News Visualizations - PolicyNav</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div style="background: linear-gradient(135deg, #FF9800 0%, #FFC107 100%); color: white; padding: 1.5em; border-radius: 8px; margin-bottom: 2em;">
+        <h1 style="color: white; margin-bottom: 0.3em;">📊 Financial News Visualizations</h1>
+        <p style="opacity: 0.9; margin: 0;">Interactive Charts & Analytics for Financial News Data</p>
+    </div>
+    <nav>
+        <a href="/">🏠 Home</a> | 
+        <a href="/financial">🔍 Search</a> | 
+        <a href="/financial/visualizations">📊 Visualizations</a>
+    </nav>
+    <div class="controls">
+        <h2>Chart Controls</h2>
+        <label>
+            X-Axis Field:
+            <select id="finXField">
+                <option value="Date">Date</option>
+                <option value="Headline">Headline</option>
+                <option value="Market_Event">Market Event</option>
+                <option value="Sector">Sector</option>
+                <option value="Sentiment">Sentiment</option>
+                <option value="Impact_Level">Impact Level</option>
+                <option value="Related_Company">Related Company</option>
+            </select>
+        </label>
+        <label>
+            Y-Metric:
+            <select id="finYMetric">
+                <option value="count">Count</option>
+                <option value="sum">Sum</option>
+                <option value="avg">Average</option>
+            </select>
+        </label>
+        <label>
+            Value Field (for Sum/Avg):
+            <select id="finValueField">
+                <option value="">Auto-detect</option>
+            </select>
+        </label>
+        <label>
+            Visualization:
+            <select id="finVizType">
+                <option value="bar">Bar Chart</option>
+                <option value="pie">Pie Chart</option>
+                <option value="doughnut">Doughnut Chart</option>
+                <option value="line">Line Chart</option>
+            </select>
+        </label>
+        <label>
+            Top Items:
+            <input type="number" id="finTopLimit" value="10" min="5" max="20">
+        </label>
+        <button onclick="updateFinChart()">Update Chart</button>
+    </div>
+    <section>
+        <h2>Interactive Chart</h2>
+        <canvas id="finMainChart" width="800" height="400"></canvas>
+    </section>
+    <script>
+        let finCurrentChart = null;
+        const colors = [
+            '#FF9800', '#FFC107', '#FFB300', '#FF7043', '#FFCC80',
+            '#FFECB3', '#FFD54F', '#FF8A65', '#FFB74D', '#FFA726'
+        ];
+        async function updateFinChart() {
+            const xField = document.getElementById('finXField').value;
+            const yMetric = document.getElementById('finYMetric').value;
+            const valueField = document.getElementById('finValueField').value;
+            const vizType = document.getElementById('finVizType').value;
+            const limit = document.getElementById('finTopLimit').value;
+            try {
+                const params = new URLSearchParams({ x_field: xField, y_metric: yMetric, value_field: valueField, limit });
+                const response = await fetch(`/financial/api/chart-data?${params.toString()}`);
+                const data = await response.json();
+                if (finCurrentChart) {
+                    finCurrentChart.destroy();
+                }
+                const ctx = document.getElementById('finMainChart').getContext('2d');
+                finCurrentChart = new Chart(ctx, {
+                    type: vizType,
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Value',
+                            data: data.data,
+                            backgroundColor: colors.slice(0, data.labels.length),
+                            borderColor: colors.slice(0, data.labels.length),
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `${xField} — ${yMetric.toUpperCase()}`
+                            }
+                        },
+                        scales: vizType === 'pie' || vizType === 'doughnut' ? {} : {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching chart data:', error);
+            }
+        }
+        updateFinChart();
+    </script>
+</body>
+</html>

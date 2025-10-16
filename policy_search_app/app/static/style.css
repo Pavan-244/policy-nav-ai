@@ -1,0 +1,118 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f9f9f9;
+    padding: 2em;
+    margin: 0;
+    line-height: 1.6;
+}
+h1 { color: #02577A; }
+h2 { color: #02577A; }
+h3 { color: #0288D1; }
+
+nav { 
+    margin-bottom: 2em; 
+    padding: 1em;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+nav a { 
+    color: #02577A; 
+    text-decoration: none; 
+    margin-right: 1em;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+nav a:hover { 
+    color: #0288D1;
+    text-decoration: underline; 
+}
+
+form, .controls {
+    background: #fff;
+    padding: 1.5em;
+    border-radius: 8px;
+    margin-bottom: 2em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+label { 
+    display: inline-block; 
+    margin-right: 1em; 
+    margin-bottom: .5em; 
+    font-weight: 500;
+    color: #333;
+}
+input, select {
+    margin-left: .5em;
+    margin-bottom: 1em;
+    padding: 0.5em 0.8em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.95em;
+    transition: border-color 0.3s ease;
+}
+input:focus, select:focus {
+    outline: none;
+    border-color: #0288D1;
+    box-shadow: 0 0 0 2px rgba(2, 136, 209, 0.1);
+}
+button {
+    background: #02577A; 
+    color: #fff; 
+    border: none;
+    padding: .7em 1.4em; 
+    border-radius: 4px; 
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.3s ease, transform 0.1s ease;
+}
+button:hover { 
+    background: #0288D1;
+    transform: translateY(-1px);
+}
+button:active {
+    transform: translateY(0);
+}
+hr { margin: 2em 0; border: none; border-top: 1px solid #ddd; }
+section { margin-bottom: 3em; }
+
+.result {
+    background: white;
+    padding: 1.5em;
+    border-radius: 8px;
+    margin-bottom: 1.5em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-left: 4px solid #0288D1;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.result:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.result h2 { 
+    color: #02577A; 
+    margin-top: 0;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 0.5em;
+}
+.result ul { 
+    background: #f9f9f9; 
+    padding: 1em; 
+    border-radius: 5px;
+    list-style: none;
+}
+.result ul li { 
+    margin-bottom: 8px;
+    padding: 4px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 1em;
+    }
+    nav a {
+        display: block;
+        margin-bottom: 0.5em;
+    }
+}

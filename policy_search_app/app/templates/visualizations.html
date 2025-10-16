@@ -2,30 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Healthcare Data Visualizations</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Data Visualizations - PolicyNav</title>
     <link rel="stylesheet" href="/static/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-    <h1>Healthcare Data Visualizations</h1>
+    <div style="background: linear-gradient(135deg, #02577A 0%, #0288D1 100%); color: white; padding: 1.5em; border-radius: 8px; margin-bottom: 2em;">
+        <h1 style="color: white; margin-bottom: 0.3em;">📊 Healthcare Data Visualizations</h1>
+        <p style="opacity: 0.9; margin: 0;">Interactive Charts & Analytics for Healthcare Policy Data</p>
+    </div>
     <nav>
-        <a href="/">Search</a> | <a href="/visualizations">Visualizations</a>
+        <a href="/">🏠 Home</a> | 
+        <a href="/healthcare">🔍 Search</a> | 
+        <a href="/visualizations">📊 Visualizations</a>
     </nav>
 
     <!-- Controls Section -->
     <div class="controls">
         <h2>Chart Controls</h2>
         <label>
-            Chart Type:
-            <select id="chartType">
-                <option value="condition">Medical Conditions</option>
-                <option value="doctor">Doctors</option>
-                <option value="hospital">Hospitals</option>
-                <option value="age_group">Age Groups</option>
-                <option value="gender">Gender</option>
-                <option value="admission_type">Admission Types</option>
-                <option value="test_results">Test Results</option>
+            X-Axis Field:
+            <select id="xField">
+                <option value="Medical Condition">Medical Conditions</option>
+                <option value="Doctor">Doctors</option>
+                <option value="Hospital">Hospitals</option>
+                <option value="Age Group">Age Groups</option>
+                <option value="Gender">Gender</option>
+                <option value="Admission Type">Admission Types</option>
+                <option value="Test Results">Test Results</option>
+            </select>
+        </label>
+        <label>
+            Y-Metric:
+            <select id="yMetric">
+                <option value="count">Count</option>
+                <option value="sum">Sum</option>
+                <option value="avg">Average</option>
+            </select>
+        </label>
+        <label>
+            Value Field (for Sum/Avg):
+            <select id="valueField">
+                <option value="">Auto-detect</option>
+                <option value="Billing Amount">Billing Amount</option>
+                <option value="Age">Age</option>
             </select>
         </label>
         <label>
@@ -67,12 +89,15 @@
         ];
 
         async function updateChart() {
-            const chartType = document.getElementById('chartType').value;
+            const xField = document.getElementById('xField').value;
+            const yMetric = document.getElementById('yMetric').value;
+            const valueField = document.getElementById('valueField').value;
             const vizType = document.getElementById('vizType').value;
             const limit = document.getElementById('topLimit').value;
 
             try {
-                const response = await fetch(`/api/chart-data?chart_type=${chartType}&limit=${limit}`);
+                const params = new URLSearchParams({ x_field: xField, y_metric: yMetric, value_field: valueField, limit });
+                const response = await fetch(`/api/chart-data?${params.toString()}`);
                 const data = await response.json();
 
                 // Destroy existing chart
@@ -87,7 +112,7 @@
                     data: {
                         labels: data.labels,
                         datasets: [{
-                            label: 'Count',
+                            label: 'Value',
                             data: data.data,
                             backgroundColor: colors.slice(0, data.labels.length),
                             borderColor: colors.slice(0, data.labels.length),
@@ -99,7 +124,7 @@
                         plugins: {
                             title: {
                                 display: true,
-                                text: `${chartType.replace('_', ' ').toUpperCase()} Distribution`
+                                text: `${xField} — ${yMetric.toUpperCase()}`
                             }
                         },
                         scales: vizType === 'pie' || vizType === 'doughnut' ? {} : {

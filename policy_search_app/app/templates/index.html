@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Policy Search - PolicyNav</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        /* Flashcard Styles */
+        .flashcards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5em;
+            margin-top: 2em;
+        }
+        
+        .flashcard {
+            perspective: 1000px;
+            height: 380px;
+            cursor: pointer;
+        }
+        
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: left;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+            padding: 1.2em;
+            overflow-y: auto;
+        }
+        
+        .flashcard-front {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .flashcard-back {
+            background: white;
+            transform: rotateY(180deg);
+            border: 2px solid #0288D1;
+        }
+        
+        .flashcard-header {
+            background: rgba(255,255,255,0.2);
+            padding: 0.8em;
+            border-radius: 8px;
+            margin-bottom: 0.8em;
+            width: 100%;
+        }
+        
+        .flashcard-header h2 {
+            color: white;
+            margin: 0;
+            font-size: 1.1em;
+        }
+        
+        .flashcard-header .similarity {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 0.3em 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .patient-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin: 0.4em 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .patient-basics {
+            background: rgba(255,255,255,0.2);
+            padding: 0.8em;
+            border-radius: 8px;
+            margin-top: 0.8em;
+            width: 100%;
+        }
+        
+        .patient-basics p {
+            margin: 0.2em 0;
+            font-size: 0.95em;
+        }
+        
+        .flip-hint {
+            margin-top: auto;
+            padding-top: 0.8em;
+            font-size: 0.8em;
+            opacity: 0.9;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        .info-section {
+            margin-bottom: 1em;
+        }
+        
+        .info-section h3 {
+            color: #02577A;
+            margin: 0 0 0.5em 0;
+            padding-bottom: 0.3em;
+            border-bottom: 2px solid #e0e0e0;
+            font-size: 0.95em;
+        }
+        
+        .info-item {
+            display: flex;
+            padding: 0.4em;
+            margin-bottom: 0.4em;
+            background: #f9f9f9;
+            border-radius: 4px;
+            border-left: 3px solid #0288D1;
+        }
+        
+        .info-item .icon {
+            margin-right: 0.4em;
+            font-size: 1em;
+        }
+        
+        .info-item .label {
+            font-weight: 600;
+            color: #333;
+            margin-right: 0.4em;
+            font-size: 0.9em;
+        }
+        
+        .info-item .value {
+            color: #555;
+            flex: 1;
+            font-size: 0.9em;
+        }
+        
+        .flip-indicator {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255,255,255,0.3);
+            color: white;
+            padding: 0.4em 0.8em;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+        
+        .flashcard-back .flip-indicator {
+            background: #0288D1;
+        }
+        
+        /* View Toggle Buttons */
+        .view-toggle {
+            margin-right: 0.5em;
+            padding: 0.6em 1.2em;
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #ccc;
+            transition: all 0.3s ease;
+        }
+        
+        .view-toggle:hover {
+            background: #e0e0e0;
+            border-color: #0288D1;
+        }
+        
+        .view-toggle.active-view {
+            background: #0288D1;
+            color: white;
+            border-color: #0288D1;
+        }
+        
+        /* Paragraph Card Styles */
+        .paragraph-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2em;
+            margin-bottom: 2em;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-left: 5px solid #0288D1;
+        }
+        
+        .paragraph-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5em;
+            padding-bottom: 1em;
+            border-bottom: 3px solid #f0f0f0;
+        }
+        
+        .paragraph-header h2 {
+            color: #02577A;
+            margin: 0;
+        }
+        
+        .similarity-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5em 1.2em;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .paragraph-content h3 {
+            color: #02577A;
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+            font-size: 1.2em;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0.5em;
+        }
+        
+        .narrative-text {
+            line-height: 1.8;
+            color: #444;
+            font-size: 1.05em;
+            text-align: justify;
+            margin-bottom: 1em;
+            padding: 1em;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 3px solid #0288D1;
+        }
+        
+        .narrative-text strong {
+            color: #02577A;
+            font-weight: 600;
+        }
+        
+        .quick-facts {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            padding: 1.5em;
+            border-radius: 10px;
+            margin-top: 2em;
+        }
+        
+        .quick-facts h4 {
+            color: #02577A;
+            margin-top: 0;
+            margin-bottom: 1em;
+        }
+        
+        .facts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1em;
+        }
+        
+        .fact-item {
+            background: white;
+            padding: 0.8em;
+            border-radius: 6px;
+            border-left: 3px solid #0288D1;
+        }
+        
+        .fact-label {
+            display: block;
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 0.3em;
+        }
+        
+        .fact-value {
+            display: block;
+            font-weight: bold;
+            color: #02577A;
+            font-size: 1.05em;
+        }
+        
+        /* Compact Table Styles */
+        .compact-list {
+            background: white;
+            border-radius: 10px;
+            padding: 1em;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        
+        .compact-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95em;
+        }
+        
+        .compact-table thead {
+            background: linear-gradient(135deg, #02577A 0%, #0288D1 100%);
+            color: white;
+        }
+        
+        .compact-table th {
+            padding: 1em 0.5em;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        
+        .compact-table tbody tr {
+            border-bottom: 1px solid #e0e0e0;
+            transition: background 0.2s ease;
+        }
+        
+        .compact-table tbody tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .compact-table td {
+            padding: 1em 0.5em;
+        }
+        
+        .compact-badge {
+            background: #667eea;
+            color: white;
+            padding: 0.3em 0.8em;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .expand-btn {
+            background: #0288D1;
+            color: white;
+            border: none;
+            padding: 0.5em 1em;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s ease;
+        }
+        
+        .expand-btn:hover {
+            background: #02577A;
+        }
+        
+        .detail-row {
+            background: #f9f9f9;
+        }
+        
+        .detail-content {
+            padding: 1.5em;
+        }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2em;
+        }
+        
+        .detail-grid div {
+            line-height: 2;
+        }
+        
+        .detail-grid strong {
+            color: #02577A;
+        }
+    </style>
+</head>
+<body>
+    <div style="background: linear-gradient(135deg, #02577A 0%, #0288D1 100%); color: white; padding: 1.5em; border-radius: 8px; margin-bottom: 2em;">
+        <h1 style="color: white; margin-bottom: 0.3em;">🏥 Healthcare Policy Navigator</h1>
+        <p style="opacity: 0.9; margin: 0;">AI-Powered Healthcare Record Search & Analysis</p>
+    </div>
+    <nav>
+        <a href="/">🏠 Home</a> | 
+        <a href="/healthcare">🔍 Search</a> | 
+        <a href="/visualizations">📊 Visualizations</a>
+    </nav>
+
+    <!-- Search Form Section -->
+    <form id="searchForm">
+        <h2>Search Patient Records</h2>
+        <div style="margin-bottom: 1em;">
+            <label style="display: block;">
+                <strong>Query:</strong>
+                <input name="query" type="text" required placeholder="Enter search query (e.g., diabetes, heart condition)" style="width: 100%; max-width: 500px;">
+            </label>
+        </div>
+        
+        <div style="margin-bottom: 1em;">
+            <label>
+                <strong>Top Results:</strong>
+                <input name="top_k" value="3" type="number" min="1" max="10" style="width: 80px;">
+            </label>
+        </div>
+
+        <h3>Optional Filters</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1em; margin-bottom: 1em;">
+            <label>
+                <strong>Medical Condition:</strong>
+                <input name="condition" type="text" placeholder="e.g., Diabetes, Cancer">
+            </label>
+            <label>
+                <strong>Doctor:</strong>
+                <input name="doctor" type="text" placeholder="e.g., Dr. Smith">
+            </label>
+            <label>
+                <strong>Hospital:</strong>
+                <input name="hospital" type="text" placeholder="e.g., City Hospital">
+            </label>
+        </div>
+        
+        <button type="submit">🔍 Search Records</button>
+        <button type="button" onclick="clearForm()" style="background: #666;">Clear</button>
+    <hr>
+
+    <!-- Display Mode Toggle -->
+    <div id="displayControls" style="display: none; background: white; padding: 1em; border-radius: 8px; margin-bottom: 1em; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <label style="font-weight: bold; color: #02577A; margin-right: 1em;">
+            📋 Display Mode:
+        </label>
+        <button onclick="switchView('flashcard')" id="btnFlashcard" class="view-toggle active-view">
+            🎴 Flashcards
+        </button>
+        <button onclick="switchView('paragraph')" id="btnParagraph" class="view-toggle">
+            📄 Detailed Paragraphs
+        </button>
+        <button onclick="switchView('compact')" id="btnCompact" class="view-toggle">
+            📋 Compact List
+        </button>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loading" style="display: none; text-align: center; padding: 2em;">
+        <p>Searching records...</p>
+    </div>
+
+    <!-- Results Section -->
+    <div id="results"></div>
+
+    <script>
+        let currentResults = [];
+        let currentViewMode = 'flashcard';
+
+        function clearForm() {
+            document.getElementById('searchForm').reset();
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('displayControls').style.display = 'none';
+        }
+
+        function switchView(mode) {
+            currentViewMode = mode;
+            
+            // Update button states
+            document.querySelectorAll('.view-toggle').forEach(btn => btn.classList.remove('active-view'));
+            document.getElementById('btn' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('active-view');
+            
+            // Re-render results
+            renderResults(currentResults);
+        }
+
+        function renderResults(results) {
+            const resultsDiv = document.getElementById('results');
+            
+            if (currentViewMode === 'flashcard') {
+                renderFlashcards(results, resultsDiv);
+            } else if (currentViewMode === 'paragraph') {
+                renderParagraphs(results, resultsDiv);
+            } else if (currentViewMode === 'compact') {
+                renderCompact(results, resultsDiv);
+            }
+        }
+
+        function renderFlashcards(results, container) {
+            container.innerHTML = `
+                <div class="flashcards-container">
+            ` + results.map((r, i) =>
+                `<div class="flashcard" onclick="this.classList.toggle('flipped')">
+                    <div class="flashcard-inner">
+                        <!-- Front of Card -->
+                        <div class="flashcard-front">
+                            <div class="flip-indicator">Click to flip ↻</div>
+                            <div class="flashcard-header">
+                                <h2>Result: ${i + 1}</h2>
+                                <div class="similarity">${(r.Similarity * 100).toFixed(1)}%</div>
+                                <div>Match Similarity</div>
+                            </div>
+                            <div class="patient-name">👤 ${r.Name || 'N/A'}</div>
+                            <div class="patient-basics">
+                                <p><strong>🏥 Condition:</strong> ${r["Medical Condition"] || 'N/A'}</p>
+                                <p><strong>📅 Age:</strong> ${r.Age || 'N/A'} • <strong>⚥</strong> ${r.Gender || 'N/A'}</p>
+                                <p><strong>🩸 Blood Type:</strong> ${r["Blood Type"] || 'N/A'}</p>
+                            </div>
+                            <div class="flip-hint">↻ Click to see full details</div>
+                        </div>
+                        
+                        <!-- Back of Card -->
+                        <div class="flashcard-back">
+                            <div class="flip-indicator">Click to flip back ↺</div>
+                            
+                            <div class="info-section">
+                                <h3>👤 Patient Information</h3>
+                                <div class="info-item">
+                                    <span class="icon">👤</span>
+                                    <span class="label">Name:</span>
+                                    <span class="value">${r.Name || 'N/A'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="icon">📅</span>
+                                    <span class="label">Age:</span>
+                                    <span class="value">${r.Age || 'N/A'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="icon">⚥</span>
+                                    <span class="label">Gender:</span>
+                                    <span class="value">${r.Gender || 'N/A'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="icon">🩸</span>
+                                    <span class="label">Blood Type:</span>
+                                    <span class="value">${r["Blood Type"] || 'N/A'}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="info-section">
+                                <h3>🏥 Medical Details</h3>
+                                <div class="info-item">
+                                    <span class="icon">🏥</span>
+                                    <span class="label">Condition:</span>
+                                    <span class="value">${r["Medical Condition"] || 'N/A'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="icon">💊</span>
+                                    <span class="label">Medication:</span>
+                                    <span class="value">${r.Medication || 'N/A'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="icon">🧪</span>
+                                    <span class="label">Test Results:</span>
+                                    <span class="value">${r["Test Results"] || 'N/A'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="icon">🚪</span>
+                                    <span class="label">Admission Type:</span>
+                                    <span class="value">${r["Admission Type"] || 'N/A'}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="info-section">
+                                <h3>📋 Admission & Billing</h3>
+                                <div class="info-item">
+                                    <span class="icon">📆</span>
+                                    <span class="label">Admitted:</span>
+                                    <span class="value">${r["Date of Admission"] ? new Date(r["Date of Admission"]).toLocaleDateString() : 'N/A'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="icon">📆</span>
+                                    <span class="label">Discharged:</span>
+                                    <span class="value">${r["Discharge Date"] ? new Date(r["Discharge Date"]).toLocaleDateString() : 'N/A'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="icon">👨‍⚕️</span>
+                                    <span class="label">Doctor:</span>
+                                    <span class="value">${r.Doctor || 'N/A'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="icon">🏥</span>
+                                    <span class="label">Hospital:</span>
+                                    <span class="value">${r.Hospital || 'N/A'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="icon">🚪</span>
+                                    <span class="label">Room:</span>
+                                    <span class="value">${r["Room Number"] || 'N/A'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="icon">🏢</span>
+                                    <span class="label">Insurance:</span>
+                                    <span class="value">${r["Insurance Provider"] || 'N/A'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="icon">💰</span>
+                                    <span class="label">Billing:</span>
+                                    <span class="value">$${r["Billing Amount"] || 'N/A'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+            ).join('') + '</div>';
+        }
+
+        function renderParagraphs(results, container) {
+            container.innerHTML = results.map((r, i) =>
+                `<div class="paragraph-card">
+                    <div class="paragraph-header">
+                        <h2>📋 Patient Record: ${i + 1}</h2>
+                        <div class="similarity-badge">${(r.Similarity * 100).toFixed(1)}% Match</div>
+                    </div>
+                    
+                    <div class="paragraph-content">
+                        <h3>👤 Patient Overview</h3>
+                        <p class="narrative-text">
+                            <strong>${r.Name || 'N/A'}</strong> is a <strong>${r.Age || 'N/A'}-year-old ${r.Gender || 'N/A'}</strong> patient 
+                            with blood type <strong>${r["Blood Type"] || 'N/A'}</strong>. The patient has been diagnosed with 
+                            <strong>${r["Medical Condition"] || 'N/A'}</strong> and is currently being treated with 
+                            <strong>${r.Medication || 'N/A'}</strong>.
+                        </p>
+                        
+                        <h3>🏥 Medical History & Treatment</h3>
+                        <p class="narrative-text">
+                            The patient was admitted to <strong>${r.Hospital || 'N/A'}</strong> on 
+                            <strong>${r["Date of Admission"] ? new Date(r["Date of Admission"]).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</strong> 
+                            as an <strong>${r["Admission Type"] || 'N/A'}</strong> case and assigned to room <strong>${r["Room Number"] || 'N/A'}</strong>. 
+                            The attending physician, <strong>Dr. ${r.Doctor || 'N/A'}</strong>, ordered comprehensive medical tests which yielded 
+                            <strong>${r["Test Results"] || 'N/A'}</strong> results. The patient was discharged on 
+                            <strong>${r["Discharge Date"] ? new Date(r["Discharge Date"]).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</strong>.
+                        </p>
+                        
+                        <h3>💰 Insurance & Billing Information</h3>
+                        <p class="narrative-text">
+                            The medical services were covered by <strong>${r["Insurance Provider"] || 'N/A'}</strong>, 
+                            with a total billing amount of <strong>$${r["Billing Amount"] || 'N/A'}</strong>. 
+                            This includes all medical procedures, medications, room charges, and professional fees incurred during the 
+                            ${r["Date of Admission"] && r["Discharge Date"] ? 
+                                Math.ceil((new Date(r["Discharge Date"]) - new Date(r["Date of Admission"])) / (1000 * 60 * 60 * 24)) + '-day' 
+                                : ''} hospital stay.
+                        </p>
+                        
+                        <div class="quick-facts">
+                            <h4>📊 Quick Facts</h4>
+                            <div class="facts-grid">
+                                <div class="fact-item">
+                                    <span class="fact-label">Admission Type:</span>
+                                    <span class="fact-value">${r["Admission Type"] || 'N/A'}</span>
+                                </div>
+                                <div class="fact-item">
+                                    <span class="fact-label">Test Results:</span>
+                                    <span class="fact-value">${r["Test Results"] || 'N/A'}</span>
+                                </div>
+                                <div class="fact-item">
+                                    <span class="fact-label">Primary Medication:</span>
+                                    <span class="fact-value">${r.Medication || 'N/A'}</span>
+                                </div>
+                                <div class="fact-item">
+                                    <span class="fact-label">Attending Physician:</span>
+                                    <span class="fact-value">Dr. ${r.Doctor || 'N/A'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+            ).join('');
+        }
+
+        function renderCompact(results, container) {
+            container.innerHTML = `
+                <div class="compact-list">
+                    <table class="compact-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Match</th>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Condition</th>
+                                <th>Hospital</th>
+                                <th>Doctor</th>
+                                <th>Billing</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${results.map((r, i) => `
+                                <tr>
+                                    <td>${i + 1}</td>
+                                    <td><span class="compact-badge">${(r.Similarity * 100).toFixed(1)}%</span></td>
+                                    <td><strong>${r.Name || 'N/A'}</strong></td>
+                                    <td>${r.Age || 'N/A'}</td>
+                                    <td>${r.Gender || 'N/A'}</td>
+                                    <td>${r["Medical Condition"] || 'N/A'}</td>
+                                    <td>${r.Hospital || 'N/A'}</td>
+                                    <td>Dr. ${r.Doctor || 'N/A'}</td>
+                                    <td>$${r["Billing Amount"] || 'N/A'}</td>
+                                    <td><button class="expand-btn" onclick="expandRow(${i})">View Details</button></td>
+                                </tr>
+                                <tr class="detail-row" id="detail-${i}" style="display: none;">
+                                    <td colspan="10">
+                                        <div class="detail-content">
+                                            <div class="detail-grid">
+                                                <div>
+                                                    <strong>🩸 Blood Type:</strong> ${r["Blood Type"] || 'N/A'}<br>
+                                                    <strong>💊 Medication:</strong> ${r.Medication || 'N/A'}<br>
+                                                    <strong>🧪 Test Results:</strong> ${r["Test Results"] || 'N/A'}<br>
+                                                    <strong>🚪 Admission Type:</strong> ${r["Admission Type"] || 'N/A'}
+                                                </div>
+                                                <div>
+                                                    <strong>📆 Admitted:</strong> ${r["Date of Admission"] ? new Date(r["Date of Admission"]).toLocaleDateString() : 'N/A'}<br>
+                                                    <strong>📆 Discharged:</strong> ${r["Discharge Date"] ? new Date(r["Discharge Date"]).toLocaleDateString() : 'N/A'}<br>
+                                                    <strong>🚪 Room:</strong> ${r["Room Number"] || 'N/A'}<br>
+                                                    <strong>🏢 Insurance:</strong> ${r["Insurance Provider"] || 'N/A'}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function expandRow(index) {
+            const detailRow = document.getElementById('detail-' + index);
+            if (detailRow.style.display === 'none') {
+                detailRow.style.display = 'table-row';
+            } else {
+                detailRow.style.display = 'none';
+            }
+        }
+
+        document.getElementById('searchForm').onsubmit = async function(e) {
+            e.preventDefault();
+            
+            // Show loading indicator
+            const loadingDiv = document.getElementById('loading');
+            const resultsDiv = document.getElementById('results');
+            loadingDiv.style.display = 'block';
+            resultsDiv.innerHTML = '';
+            
+            try {
+                let form = new FormData(this);
+                let url = `/search?` + new URLSearchParams(form).toString();
+                let res = await fetch(url);
+                
+                if (!res.ok) {
+                    throw new Error('Search request failed');
+                }
+                
+                let data = await res.json();
+                
+                // Hide loading indicator
+                loadingDiv.style.display = 'none';
+                
+                if (data.results.length === 0) {
+                    document.getElementById('displayControls').style.display = 'none';
+                    resultsDiv.innerHTML = `
+                        <div style="background: #fff3cd; padding: 1em; border-radius: 5px; border-left: 4px solid #ffc107;">
+                            <strong>No Results Found</strong>
+                            <p>No matching records found for your search query. Try adjusting your search terms or filters.</p>
+                        </div>
+                    `;
+                } else {
+                    // Store results and show display controls
+                    currentResults = data.results;
+                    document.getElementById('displayControls').style.display = 'block';
+                    
+                    // Show success message
+                    const successMsg = document.createElement('div');
+                    successMsg.style.cssText = 'background: #d4edda; padding: 1em; border-radius: 5px; margin-bottom: 1em; border-left: 4px solid #28a745;';
+                    successMsg.innerHTML = `<strong>🎯 Search Complete!</strong> Found ${data.results.length} matching record(s). Use the display mode buttons to change the view.`;
+                    resultsDiv.appendChild(successMsg);
+                    
+                    // Render results in current view mode
+                    renderResults(currentResults);
+                }
+            } catch (error) {
+                // Hide loading indicator
+                loadingDiv.style.display = 'none';
+                
+                resultsDiv.innerHTML = `
+                    <div style="background: #f8d7da; padding: 1em; border-radius: 5px; border-left: 4px solid #dc3545;">
+                        <strong>Error</strong>
+                        <p>An error occurred while searching. Please try again.</p>
+                        <p style="color: #666; font-size: 0.9em;">${error.message}</p>
+                    </div>
+                `;
+            }
+        };
+    </script>
+</body>
+</html>

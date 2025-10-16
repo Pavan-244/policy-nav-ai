@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PolicyNav - Public Policy Navigation Using AI</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .hero-section {
+            text-align: center;
+            padding: 3em 2em;
+            background: linear-gradient(135deg, #02577A 0%, #0288D1 100%);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 3em;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .hero-section h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.3em;
+            color: white;
+        }
+        .hero-section .tagline {
+            font-size: 1.2em;
+            opacity: 0.95;
+            margin-bottom: 0.5em;
+        }
+        .hero-section .subtitle {
+            font-size: 1em;
+            opacity: 0.85;
+        }
+        .policy-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2em;
+            margin-bottom: 3em;
+        }
+        .policy-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2em;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .policy-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            border-color: #02577A;
+        }
+        .policy-card.active {
+            background: #e3f2fd;
+            border-color: #0288D1;
+        }
+        .policy-card.coming-soon {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .policy-card.coming-soon:hover {
+            transform: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .policy-icon {
+            font-size: 3em;
+            margin-bottom: 0.5em;
+        }
+        .policy-card h2 {
+            color: #02577A;
+            margin-bottom: 0.5em;
+            font-size: 1.5em;
+        }
+        .policy-card p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 1em;
+        }
+        .policy-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 0.3em 0.8em;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        .policy-badge.coming-soon {
+            background: #ffc107;
+            color: #333;
+        }
+        .features-section {
+            background: white;
+            padding: 2em;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 2em;
+        }
+        .features-section h2 {
+            color: #02577A;
+            margin-bottom: 1em;
+            text-align: center;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5em;
+            margin-top: 1.5em;
+        }
+        .feature-item {
+            padding: 1em;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #0288D1;
+        }
+        .feature-item h3 {
+            color: #02577A;
+            margin-bottom: 0.5em;
+            font-size: 1.1em;
+        }
+        .feature-item p {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+        .ai-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.4em 1em;
+            border-radius: 20px;
+            font-size: 0.9em;
+            display: inline-block;
+            margin-top: 1em;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <h1>🏛️ PolicyNav</h1>
+        <p class="tagline">Public Policy Navigation Using AI</p>
+        <p class="subtitle">Intelligent search and analysis across multiple policy domains powered by NLP & Machine Learning</p>
+        <span class="ai-badge">🤖 AI-Powered • Natural Language Processing</span>
+    </div>
+
+    <!-- Policy Domain Selection -->
+    <section>
+        <h2 style="text-align: center; color: #02577A; margin-bottom: 1.5em;">Select Your Policy Domain</h2>
+        <div class="policy-cards">
+            <!-- Healthcare Policy - Active -->
+            <a href="/healthcare" class="policy-card active">
+                <div class="policy-icon">🏥</div>
+                <h2>Healthcare Policy</h2>
+                <p>Search and analyze healthcare records, medical conditions, patient data, and health-related policies using advanced AI algorithms.</p>
+                <div>
+                    <span class="policy-badge">Active</span>
+                </div>
+                <ul style="margin-top: 1em; color: #666; font-size: 0.9em;">
+                    <li>✓ Patient Record Search</li>
+                    <li>✓ Medical Condition Analysis</li>
+                    <li>✓ Healthcare Data Visualization</li>
+                    <li>✓ TF-IDF & Cosine Similarity</li>
+                </ul>
+            </a>
+
+            <!-- Education Policy - Active -->
+            <a href="/education" class="policy-card active">
+                <div class="policy-icon">🎓</div>
+                <h2>Education Policy</h2>
+                <p>Navigate educational policies, student records, academic programs, and institutional data with intelligent search capabilities.</p>
+                <div>
+                    <span class="policy-badge">Active</span>
+                </div>
+                <ul style="margin-top: 1em; color: #666; font-size: 0.9em;">
+                    <li>✓ Academic Policy Search</li>
+                    <li>✓ Student Performance Analysis</li>
+                    <li>✓ Program & Degree Insights</li>
+                    <li>✓ Institution Aggregates</li>
+                </ul>
+            </a>
+                <!-- Financial News Policy - Active -->
+                <a href="/financial" class="policy-card active">
+                    <div class="policy-icon">📰</div>
+                    <h2>Financial News</h2>
+                    <p>Discover and analyze financial news articles, trends, and sources using AI-powered semantic search.</p>
+                    <div>
+                        <span class="policy-badge">Active</span>
+                    </div>
+                </a>
+
+
+        </div>
+    </section>
+
+    <!-- AI Features Section -->
+    <section class="features-section">
+        <h2>🤖 AI-Powered Features</h2>
+        <div class="features-grid">
+            <div class="feature-item">
+                <h3>📝 Natural Language Processing</h3>
+                <p>Advanced NLP algorithms understand your queries in natural language, making policy search intuitive and accessible.</p>
+            </div>
+            <div class="feature-item">
+                <h3>🔍 Semantic Search</h3>
+                <p>TF-IDF vectorization and cosine similarity ensure you find the most relevant policy documents and records.</p>
+            </div>
+            <div class="feature-item">
+                <h3>📊 Smart Visualization</h3>
+                <p>Interactive charts and graphs powered by Chart.js and D3.js for better data understanding and insights.</p>
+            </div>
+            <div class="feature-item">
+                <h3>🎯 Intelligent Filtering</h3>
+                <p>Multi-dimensional filtering capabilities to narrow down search results based on various policy parameters.</p>
+            </div>
+            <div class="feature-item">
+                <h3>⚡ Real-time Analysis</h3>
+                <p>Instant search results with similarity scoring to help you find the most relevant information quickly.</p>
+            </div>
+            <div class="feature-item">
+                <h3>🔒 Scalable Architecture</h3>
+                <p>Built on FastAPI for high performance and easy expansion to additional policy domains.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="text-align: center; padding: 2em; color: #666; border-top: 1px solid #ddd; margin-top: 3em;">
+        <p><strong>PolicyNav</strong> - Empowering citizens and policymakers with AI-driven insights</p>
+        <p style="font-size: 0.9em; margin-top: 0.5em;">© 2025 PolicyNav AI. Powered by Natural Language Processing & Machine Learning</p>
+    </footer>
+</body>
+</html>

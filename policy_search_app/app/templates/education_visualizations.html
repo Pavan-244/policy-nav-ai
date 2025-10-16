@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Education Data Visualizations - PolicyNav</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div style="background: linear-gradient(135deg, #4CAF50 0%, #81C784 100%); color: white; padding: 1.5em; border-radius: 8px; margin-bottom: 2em;">
+        <h1 style="color: white; margin-bottom: 0.3em;">📊 Education Data Visualizations</h1>
+        <p style="opacity: 0.9; margin: 0;">Interactive Charts & Analytics for Education Policy Data</p>
+    </div>
+    <nav>
+        <a href="/">🏠 Home</a> | 
+        <a href="/education">🔎 Search</a> | 
+        <a href="/education/visualizations">📊 Visualizations</a>
+    </nav>
+
+    <!-- Controls Section -->
+    <div class="controls">
+        <h2>Chart Controls</h2>
+        <label>
+            X-Axis Field:
+            <select id="eduXField">
+                <option value="Sector">Sectors</option>
+                <option value="Region">Regions</option>
+                <option value="Status">Status</option>
+                <option value="Year">Year</option>
+            </select>
+        </label>
+        <label>
+            Y-Metric:
+            <select id="eduYMetric">
+                <option value="count">Count</option>
+                <option value="sum">Sum</option>
+                <option value="avg">Average</option>
+            </select>
+        </label>
+        <label>
+            Value Field (for Sum/Avg):
+            <select id="eduValueField">
+                <option value="">Auto-detect</option>
+                <option value="Funding (USD M)">Funding (USD M)</option>
+            </select>
+        </label>
+        <label>
+            Visualization:
+            <select id="eduVizType">
+                <option value="bar">Bar Chart</option>
+                <option value="pie">Pie Chart</option>
+                <option value="doughnut">Doughnut Chart</option>
+                <option value="line">Line Chart</option>
+            </select>
+        </label>
+        <label>
+            Top Items:
+            <input type="number" id="eduTopLimit" value="10" min="5" max="20">
+        </label>
+        <button onclick="updateEduChart()">Update Chart</button>
+    </div>
+
+    <!-- Chart.js Section -->
+    <section>
+        <h2>Interactive Chart</h2>
+        <canvas id="eduMainChart" width="800" height="400"></canvas>
+    </section>
+
+    <!-- D3.js Section -->
+    <section>
+        <h2>Funding Distribution (D3.js)</h2>
+        <button onclick="loadFeesChart()">Load Funding Histogram</button>
+        <svg id="feesChart" width="800" height="400"></svg>
+    </section>
+
+    <script>
+        let eduCurrentChart = null;
+
+        // Color palette
+        const colors = [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+            '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384'
+        ];
+
+        async function updateEduChart() {
+            const xField = document.getElementById('eduXField').value;
+            const yMetric = document.getElementById('eduYMetric').value;
+            const valueField = document.getElementById('eduValueField').value;
+            const vizType = document.getElementById('eduVizType').value;
+            const limit = document.getElementById('eduTopLimit').value;
+
+            try {
+                const params = new URLSearchParams({ x_field: xField, y_metric: yMetric, value_field: valueField, limit });
+                const response = await fetch(`/education/api/chart-data?${params.toString()}`);
+                const data = await response.json();
+
+                // Destroy existing chart
+                if (eduCurrentChart) {
+                    eduCurrentChart.destroy();
+                }
+
+                // Create new chart
+                const ctx = document.getElementById('eduMainChart').getContext('2d');
+                eduCurrentChart = new Chart(ctx, {
+                    type: vizType,
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Value',
+                            data: data.data,
+                            backgroundColor: colors.slice(0, data.labels.length),
+                            borderColor: colors.slice(0, data.labels.length),
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `${xField} — ${yMetric.toUpperCase()}`
+                            }
+                        },
+                        scales: vizType === 'pie' || vizType === 'doughnut' ? {} : {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching chart data:', error);
+            }
+        }
+
+        async function loadFeesChart() {
+            try {
+                const response = await fetch('/education/api/fees-stats');
+                const result = await response.json();
+                
+                // Clear previous chart
+                d3.select('#feesChart').selectAll('*').remove();
+                
+                // Create D3 histogram
+                const data = result.data;
+                const margin = {top: 20, right: 30, bottom: 40, left: 40};
+                const width = 800 - margin.left - margin.right;
+                const height = 400 - margin.top - margin.bottom;
+                
+                const svg = d3.select('#feesChart')
+                    .append('g')
+                    .attr('transform', `translate(${margin.left},${margin.top})`);
+                
+                const x = d3.scaleLinear()
+                    .domain(d3.extent(data))
+                    .range([0, width]);
+                
+                const histogram = d3.histogram()
+                    .domain(x.domain())
+                    .thresholds(x.ticks(20));
+                
+                const bins = histogram(data);
+                
+                const y = d3.scaleLinear()
+                    .domain([0, d3.max(bins, d => d.length)])
+                    .range([height, 0]);
+                
+                svg.selectAll('rect')
+                    .data(bins)
+                    .enter()
+                    .append('rect')
+                    .attr('x', d => x(d.x0))
+                    .attr('y', d => y(d.length))
+                    .attr('width', d => x(d.x1) - x(d.x0) - 1)
+                    .attr('height', d => height - y(d.length))
+                    .attr('fill', '#36A2EB');
+                
+                // Add axes
+                svg.append('g')
+                    .attr('transform', `translate(0,${height})`)
+                    .call(d3.axisBottom(x));
+                
+                svg.append('g')
+                    .call(d3.axisLeft(y));
+                
+                // Add labels
+                svg.append('text')
+                    .attr('x', width / 2)
+                    .attr('y', height + margin.bottom)
+                    .attr('text-anchor', 'middle')
+                    .text('Funding (USD Millions)');
+                
+                svg.append('text')
+                    .attr('transform', 'rotate(-90)')
+                    .attr('y', 0 - margin.left)
+                    .attr('x', 0 - (height / 2))
+                    .attr('dy', '1em')
+                    .attr('text-anchor', 'middle')
+                    .text('Frequency');
+                    
+            } catch (error) {
+                console.error('Error loading fees chart:', error);
+            }
+        }
+
+        // Load initial chart
+        updateEduChart();
+    </script>
+</body>
+</html>

@@ -2,8 +2,8 @@ import joblib
 from sklearn.metrics.pairwise import cosine_similarity
 from typing import List, Optional, Dict
 
-FIN_VECTORIZER_PATH = "app/models/financial_news_vectorizer.pkl"
-FIN_MATRIX_PATH = "app/models/financial_news_tfidf_matrix.pkl"
+FIN_VECTORIZER_PATH = "app/models/financial_models/financial_news_vectorizer.pkl"
+FIN_MATRIX_PATH = "app/models/financial_models/financial_news_tfidf_matrix.pkl"
 
 try:
     fin_vectorizer = joblib.load(FIN_VECTORIZER_PATH)

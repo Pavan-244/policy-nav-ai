@@ -1,0 +1,51 @@
+/* PolicyNav custom styles */
+:root {
+  --brand: #4f46e5;
+  --bg-muted: #0b1220;
+}
+
+html, body { height: 100%; }
+body {
+  background: linear-gradient(180deg, #0f172a 0%, #0b1220 100%);
+  color: #e5e7eb;
+}
+
+.navbar { background: rgba(15, 23, 42, 0.8) !important; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.navbar .navbar-brand { color: #fff; }
+.navbar .nav-link { color: #cbd5e1; }
+.navbar .nav-link:hover { color: #fff; }
+
+.card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #e5e7eb;
+}
+.card .form-control, .card .form-select {
+  background: rgba(0,0,0,0.2);
+  color: #e5e7eb;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.card .form-control::placeholder { color: #94a3b8; }
+
+.btn-brand { background: var(--brand); border: none; }
+.btn-brand:hover { background: #4338ca; }
+
+.badge-soft {
+  background: rgba(79, 70, 229, 0.15);
+  color: #c7d2fe;
+  border: 1px solid rgba(79, 70, 229, 0.3);
+}
+
+.table-dark th, .table-dark td { color: #e5e7eb; }
+
+.section-title {
+  color: #fff;
+  font-weight: 700;
+}
+
+.text-muted-2 { color: #94a3b8 !important; }
+
+.hero {
+  background: linear-gradient(135deg, rgba(79,70,229,0.25), rgba(14,165,233,0.2));
+  border: 1px solid rgba(255,255,255,0.08);
+}

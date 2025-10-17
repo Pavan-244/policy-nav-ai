@@ -1,91 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Financial News Search - PolicyNav</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    <div style="background: linear-gradient(135deg, #FF9800 0%, #FFC107 100%); color: white; padding: 1.5em; border-radius: 8px; margin-bottom: 2em;">
-        <h1 style="color: white; margin-bottom: 0.3em;">📰 Financial News Navigator</h1>
-        <p style="opacity: 0.9; margin: 0;">AI-Powered Financial News Semantic Search</p>
-    </div>
-    <nav>
-        <a href="/">🏠 Home</a> | 
-        <a href="/financial">🔍 Search</a> | 
-        <a href="/financial/visualizations">📊 Visualizations</a>
-    </nav>
-    <form id="finSearchForm">
-        <h2>Search Financial News</h2>
-        <div style="margin-bottom: 1em;">
-            <label style="display: block;">
-                <strong>Query:</strong>
-                <input name="query" type="text" required placeholder="Enter search query (e.g., commodity price shock, government policy)" style="width: 100%; max-width: 500px;">
-            </label>
-        </div>
-        <div style="margin-bottom: 1em;">
-            <label>
-                <strong>Top Results:</strong>
-                <input name="top_k" value="3" type="number" min="1" max="10" style="width: 80px;">
-            </label>
-        </div>
-        <button type="submit">🔎 Search News</button>
-        <button type="button" onclick="clearFinForm()" style="background: #666;">Clear</button>
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="section-title mb-3">Financial News Search</h2>
+<div class="card mb-4">
+  <div class="card-body">
+    <form id="fin-form" class="row g-3">
+      <div class="col-lg-8">
+        <label class="form-label" for="fin-q">Query</label>
+        <input id="fin-q" class="form-control" placeholder="e.g., interest rate hike" required />
+      </div>
+      <div class="col-lg-2">
+        <label class="form-label" for="fin-k">Top K</label>
+        <input id="fin-k" type="number" class="form-control" min="1" max="10" value="3" />
+      </div>
+      <div class="col-lg-2 d-flex align-items-end">
+        <button class="btn btn-brand w-100" type="submit">Search</button>
+      </div>
     </form>
-    <hr>
-    <div id="finLoading" style="display: none; text-align: center; padding: 2em;">
-        <p>Searching financial news...</p>
-    </div>
-    <div id="finResults"></div>
-    <script>
-        function clearFinForm() {
-            document.getElementById('finSearchForm').reset();
-            document.getElementById('finResults').innerHTML = '';
-        }
-        document.getElementById('finSearchForm').onsubmit = async function(e) {
-            e.preventDefault();
-            const loadingDiv = document.getElementById('finLoading');
-            const resultsDiv = document.getElementById('finResults');
-            loadingDiv.style.display = 'block';
-            resultsDiv.innerHTML = '';
-            try {
-                let form = new FormData(this);
-                let url = `/financial/search?` + new URLSearchParams(form).toString();
-                let res = await fetch(url);
-                if (!res.ok) {
-                    throw new Error('Search request failed');
-                }
-                let data = await res.json();
-                loadingDiv.style.display = 'none';
-                if (!data.results || data.results.length === 0) {
-                    resultsDiv.innerHTML = `<div style=\"background: #fff3cd; padding: 1em; border-radius: 5px; border-left: 4px solid #ffc107;\"><strong>No Results Found</strong><p>No matching news found. Try adjusting your search terms or filters.</p></div>`;
-                } else {
-                    resultsDiv.innerHTML = data.results.map((r, i) => {
-                        const sim = r["Similarity"] !== undefined ? (r["Similarity"] * 100).toFixed(1) + '%' : 'N/A';
-                        return `<div class=\"result\"><h2>Result #${i + 1} <span style=\"color: #666; font-size: 0.8em;\">(Similarity: ${sim})</span></h2>
-                            <div style=\"display: grid; grid-template-columns: 1fr 1fr; gap: 0.5em;\">
-                                <div>
-                                    <h3 style=\"color: #FF9800; margin-top: 0;\">News Details</h3>
-                                    <ul style=\"list-style: none; padding-left: 0;\">
-                                        <li><b>📅 Date:</b> ${r["Date"] || 'N/A'}</li>
-                                        <li><b>📰 Headline:</b> ${r["Headline"] || 'N/A'}</li>
-                                        <li><b>📊 Market Event:</b> ${r["Market_Event"] || 'N/A'}</li>
-                                        <li><b>🏢 Sector:</b> ${r["Sector"] || 'N/A'}</li>
-                                        <li><b>� Sentiment:</b> ${r["Sentiment"] || 'N/A'}</li>
-                                        <li><b>⚡ Impact Level:</b> ${r["Impact_Level"] || 'N/A'}</li>
-                                        <li><b>🏦 Related Company:</b> ${r["Related_Company"] || 'N/A'}</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>`;
-                    }).join('');
-                }
-            } catch (error) {
-                loadingDiv.style.display = 'none';
-                resultsDiv.innerHTML = `<div style="background: #f8d7da; padding: 1em; border-radius: 5px; border-left: 4px solid #dc3545;"><strong>Error</strong><p>An error occurred while searching. Please try again.</p><p style="color: #666; font-size: 0.9em;">${error.message}</p></div>`;
-            }
-        };
-    </script>
-</body>
-</html>
+  <div id="fin-results" class="mt-3" aria-live="polite"></div>
+  </div>
+</div>
+
+<script>
+const finForm = document.getElementById('fin-form');
+const finResults = document.getElementById('fin-results');
+finForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  finResults.innerHTML = '<div class="text-muted">Searching…</div>';
+  const q = document.getElementById('fin-q').value.trim();
+  const k = document.getElementById('fin-k').value || 3;
+  try {
+    const res = await fetch(`/financial/search?query=${encodeURIComponent(q)}&top_k=${k}`);
+    const data = await res.json();
+    finResults.innerHTML = (data.results || []).map(r => `
+      <div class="border-top pt-2 mt-2">
+        <div><strong>${r['Headline'] || ''}</strong> <span class="badge badge-soft ms-2">${(r['Similarity']||0).toFixed(3)}</span></div>
+        <div class="text-muted-2">${r['Date'] || ''} • ${r['Sector'] || ''} • ${r['Market_Event'] || ''} • ${r['Sentiment'] || ''}</div>
+      </div>`).join('') || '<div class="text-muted">No results</div>';
+  } catch (e) {
+    finResults.innerHTML = '<div class="text-danger">Search failed.</div>';
+  }
+});
+</script>
+{% endblock %}

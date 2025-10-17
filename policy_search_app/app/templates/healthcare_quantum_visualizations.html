@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="section-title mb-3">Healthcare Quantum Visualizations</h2>
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label" for="x-field">X Field</label>
+        <select id="x-field" class="form-select"></select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label" for="y-metric">Y Metric</label>
+        <select id="y-metric" class="form-select">
+          <option value="count">Count</option>
+          <option value="sum">Sum</option>
+          <option value="avg">Average</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label" for="value-field">Value Field (for Sum/Avg)</label>
+        <select id="value-field" class="form-select"></select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="limit">Limit</label>
+        <input id="limit" type="number" class="form-control" min="3" max="50" value="10" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <canvas id="barChart" height="120"></canvas>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+async function loadFields() {
+  const res = await fetch('/healthcare/quantum/api/fields');
+  const data = await res.json();
+  const cat = data.categorical || [];
+  const num = data.numeric || [];
+  const xf = document.getElementById('x-field');
+  cat.forEach(c => xf.append(new Option(c, c)));
+  const vf = document.getElementById('value-field');
+  vf.append(new Option('—', ''));
+  num.forEach(n => vf.append(new Option(n, n)));
+  if (cat.length) xf.value = cat[0];
+}
+
+async function loadBar() {
+  const xField = document.getElementById('x-field').value;
+  const yMetric = document.getElementById('y-metric').value;
+  const valueField = document.getElementById('value-field').value;
+  const limit = document.getElementById('limit').value || 10;
+  const params = new URLSearchParams({ x_field: xField, y_metric: yMetric, limit });
+  if (valueField) params.append('value_field', valueField);
+  const res = await fetch(`/healthcare/quantum/api/chart-data?${params.toString()}`);
+  const data = await res.json();
+  return data;
+}
+
+let barChart;
+function renderBar(labels, values) {
+  const ctx = document.getElementById('barChart');
+  barChart && barChart.destroy();
+  barChart = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Value', data: values, backgroundColor: 'rgba(79,70,229,0.5)' }] },
+    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+  });
+}
+
+async function refresh() {
+  const bar = await loadBar();
+  renderBar(bar.labels || [], bar.data || []);
+}
+
+loadFields().then(refresh);
+['x-field','y-metric','value-field','limit'].forEach(id => document.getElementById(id).addEventListener('change', refresh));
+</script>
+{% endblock %}

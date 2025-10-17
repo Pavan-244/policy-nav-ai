@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="section-title mb-3">Education Quantum Search</h2>
+<div class="card">
+  <div class="card-body">
+    <form id="q-form" class="row g-3">
+      <div class="col-lg-8">
+        <label class="form-label" for="q">Query</label>
+        <input id="q" class="form-control" placeholder="e.g., digital literacy policy" required />
+      </div>
+      <div class="col-lg-2">
+        <label class="form-label" for="k">Top K</label>
+        <input id="k" type="number" class="form-control" min="1" max="20" value="3" />
+      </div>
+      <div class="col-lg-2 d-flex align-items-end">
+        <button class="btn btn-brand w-100" type="submit">Search</button>
+      </div>
+    </form>
+  <div id="q-results" class="mt-3" aria-live="polite"></div>
+  </div>
+</div>
+<script>
+const form = document.getElementById('q-form');
+const results = document.getElementById('q-results');
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  results.innerHTML = '<div class="text-muted">Searching…</div>';
+  const q = document.getElementById('q').value.trim();
+  const k = document.getElementById('k').value || 3;
+  try {
+    const res = await fetch(`/education/quantum/search?query=${encodeURIComponent(q)}&top_k=${k}`);
+    const data = await res.json();
+    results.innerHTML = (data.results || []).map(r => `
+      <div class="border-top pt-2 mt-2">
+        <div class="d-flex justify-content-between">
+          <div><strong>${r['Title'] || ('Doc #' + (r['Index'] ?? ''))}</strong></div>
+          <div><span class="badge badge-soft ms-2">${(r['Similarity']||0).toFixed(3)}</span></div>
+        </div>
+        <div class="text-muted-2">${r['Sector'] || ''} • ${r['Year'] || ''}</div>
+        <div class="small">${r['Summary'] || ''}</div>
+      </div>`).join('') || '<div class="text-muted">No results</div>';
+  } catch (e) {
+    results.innerHTML = '<div class="text-danger">Search failed.</div>';
+  }
+});
+</script>
+{% endblock %}

@@ -1,155 +1,78 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Education Policy Search - PolicyNav</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    <div style="background: linear-gradient(135deg, #4CAF50 0%, #81C784 100%); color: white; padding: 1.5em; border-radius: 8px; margin-bottom: 2em;">
-        <h1 style="color: white; margin-bottom: 0.3em;">🎓 Education Policy Navigator</h1>
-        <p style="opacity: 0.9; margin: 0;">AI-Powered Education Records & Policy Search</p>
-    </div>
-    <nav>
-        <a href="/">🏠 Home</a> | 
-        <a href="/education">🔍 Search</a> | 
-        <a href="/education/visualizations">📊 Visualizations</a>
-    </nav>
-
-    <!-- Search Form Section -->
-    <form id="eduSearchForm">
-        <h2>Search Education Policies</h2>
-        <div style="margin-bottom: 1em;">
-            <label style="display: block;">
-                <strong>Query:</strong>
-                <input name="query" type="text" required placeholder="Enter search query (e.g., rural education, free materials)" style="width: 100%; max-width: 500px;">
-            </label>
-        </div>
-        
-        <div style="margin-bottom: 1em;">
-            <label>
-                <strong>Top Results:</strong>
-                <input name="top_k" value="3" type="number" min="1" max="10" style="width: 80px;">
-            </label>
-        </div>
-
-        <h3>Optional Filters</h3>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1em; margin-bottom: 1em;">
-            <label>
-                <strong>Sector:</strong>
-                <input name="sector" type="text" placeholder="e.g., primary, secondary">
-            </label>
-            <label>
-                <strong>Region:</strong>
-                <input name="region" type="text" placeholder="e.g., Uttar Pradesh">
-            </label>
-            <label>
-                <strong>Status:</strong>
-                <input name="status" type="text" placeholder="e.g., active, proposed">
-            </label>
-            <label>
-                <strong>Year:</strong>
-                <input name="year" type="text" placeholder="e.g., 2022">
-            </label>
-        </div>
-        
-        <button type="submit">🔎 Search Records</button>
-        <button type="button" onclick="clearEduForm()" style="background: #666;">Clear</button>
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="section-title mb-3">Education Policy Search</h2>
+<div class="card">
+  <div class="card-body">
+    <form id="edu-form" class="row g-3">
+      <div class="col-lg-6">
+        <label class="form-label" for="edu-q">Query</label>
+        <input id="edu-q" class="form-control" placeholder="e.g., teacher training funding" required />
+      </div>
+      <div class="col-6 col-lg-2">
+        <label class="form-label" for="edu-k">Top K</label>
+        <input id="edu-k" type="number" class="form-control" min="1" max="20" value="3" />
+      </div>
+      <div class="col-md-3 col-lg-2">
+        <label class="form-label" for="edu-sector">Sector</label>
+        <input id="edu-sector" class="form-control" placeholder="e.g., Higher Ed" />
+      </div>
+      <div class="col-md-3 col-lg-2">
+        <label class="form-label" for="edu-region">Region</label>
+        <input id="edu-region" class="form-control" placeholder="e.g., Europe" />
+      </div>
+      <div class="col-md-3 col-lg-2">
+        <label class="form-label" for="edu-status">Status</label>
+        <input id="edu-status" class="form-control" placeholder="e.g., Active" />
+      </div>
+      <div class="col-md-3 col-lg-2">
+        <label class="form-label" for="edu-year">Year</label>
+        <input id="edu-year" class="form-control" placeholder="e.g., 2022" />
+      </div>
+      <div class="col-12">
+        <button class="btn btn-brand" type="submit">Search</button>
+        <a class="btn btn-outline-light ms-2" href="/education/visualizations">View Visualizations</a>
+        <a class="btn btn-outline-light ms-2" href="/education/quantum">Quantum Search</a>
+      </div>
     </form>
+  <div id="edu-results" class="mt-3" aria-live="polite"></div>
+  </div>
+</div>
 
-    <hr>
+<script>
+const eduForm = document.getElementById('edu-form');
+const eduResults = document.getElementById('edu-results');
 
-    <!-- Loading Indicator -->
-    <div id="eduLoading" style="display: none; text-align: center; padding: 2em;">
-        <p>Searching education records...</p>
-    </div>
-
-    <!-- Results Section -->
-    <div id="eduResults"></div>
-
-    <script>
-        function clearEduForm() {
-            document.getElementById('eduSearchForm').reset();
-            document.getElementById('eduResults').innerHTML = '';
-        }
-
-        document.getElementById('eduSearchForm').onsubmit = async function(e) {
-            e.preventDefault();
-            
-            // Show loading indicator
-            const loadingDiv = document.getElementById('eduLoading');
-            const resultsDiv = document.getElementById('eduResults');
-            loadingDiv.style.display = 'block';
-            resultsDiv.innerHTML = '';
-            
-            try {
-                let form = new FormData(this);
-                let url = `/education/search?` + new URLSearchParams(form).toString();
-                let res = await fetch(url);
-                
-                if (!res.ok) {
-                    throw new Error('Search request failed');
-                }
-                
-                let data = await res.json();
-                
-                // Hide loading indicator
-                loadingDiv.style.display = 'none';
-                
-                if (!data.results || data.results.length === 0) {
-                    resultsDiv.innerHTML = `
-                        <div style="background: #fff3cd; padding: 1em; border-radius: 5px; border-left: 4px solid #ffc107;">
-                            <strong>No Results Found</strong>
-                            <p>No matching records found. Try adjusting your search terms or filters.</p>
-                        </div>
-                    `;
-                } else {
-                    resultsDiv.innerHTML = data.results.map((r, i) => {
-                        const sim = r["Similarity"] !== undefined ? (r["Similarity"] * 100).toFixed(1) + '%' : 'N/A';
-                        return `
-                        <div class="result">
-                            <h2>Result #${i + 1} <span style="color: #666; font-size: 0.8em;">(Similarity: ${sim})</span></h2>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5em;">
-                                <div>
-                                    <h3 style="color: #02577A; margin-top: 0;">Policy Overview</h3>
-                                    <ul style="list-style: none; padding-left: 0;">
-                                        <li><b>🆔 Policy ID:</b> ${r["Policy ID"] || 'N/A'}</li>
-                                        <li><b>� Title:</b> ${r["Title"] || 'N/A'}</li>
-                                        <li><b>🏷️ Sector:</b> ${r["Sector"] || 'N/A'}</li>
-                                        <li><b>�️ Region:</b> ${r["Region"] || 'N/A'}</li>
-                                        <li><b>📅 Year:</b> ${r["Year"] || 'N/A'}</li>
-                                        <li><b>📊 Status:</b> ${r["Status"] || 'N/A'}</li>
-                                        <li><b>👥 Target Group:</b> ${r["Target Group"] || 'N/A'}</li>
-                                    </ul>
-                                </div>
-                                <div>
-                                    <h3 style="color: #02577A; margin-top: 0;">Details</h3>
-                                    <ul style="list-style: none; padding-left: 0;">
-                                        <li><b>💵 Funding (USD M):</b> ${r["Funding (USD M)"] || 'N/A'}</li>
-                                        <li><b>⭐ Impact Score:</b> ${r["Impact Score"] || 'N/A'}</li>
-                                        <li><b>🤝 Stakeholders:</b> ${r["Stakeholders"] || 'N/A'}</li>
-                                        <li><b>🧭 Goals:</b> ${r["Goals"] || 'N/A'}</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            ${r["Summary"] ? `<div style="margin-top: 0.5em;"><b>📝 Summary:</b> ${r["Summary"]}</div>` : ''}
-                        </div>`;
-                    }).join('');
-                }
-            } catch (error) {
-                // Hide loading indicator
-                loadingDiv.style.display = 'none';
-                
-                resultsDiv.innerHTML = `
-                    <div style="background: #f8d7da; padding: 1em; border-radius: 5px; border-left: 4px solid #dc3545;">
-                        <strong>Error</strong>
-                        <p>An error occurred while searching. Please try again.</p>
-                        <p style="color: #666; font-size: 0.9em;">${error.message}</p>
-                    </div>
-                `;
-            }
-        };
-    </script>
-</body>
-</html>
+eduForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  eduResults.innerHTML = '<div class="text-muted">Searching…</div>';
+  const q = document.getElementById('edu-q').value.trim();
+  const k = document.getElementById('edu-k').value || 3;
+  const sector = document.getElementById('edu-sector').value.trim();
+  const region = document.getElementById('edu-region').value.trim();
+  const status = document.getElementById('edu-status').value.trim();
+  const year = document.getElementById('edu-year').value.trim();
+  const params = new URLSearchParams({ query: q, top_k: k });
+  if (sector) params.append('sector', sector);
+  if (region) params.append('region', region);
+  if (status) params.append('status', status);
+  if (year) params.append('year', year);
+  try {
+    const res = await fetch(`/education/search?${params.toString()}`);
+    const data = await res.json();
+    const out = (data.results || []).map(r => `
+      <div class="border-top pt-2 mt-2">
+        <div class="d-flex justify-content-between">
+          <div><strong>${r['Title'] || ''}</strong></div>
+          <div><span class="badge badge-soft ms-2">${(r['Similarity']||0).toFixed(3)}</span></div>
+        </div>
+        <div class="text-muted-2">${r['Sector'] || ''} • ${r['Region'] || ''} • ${r['Year'] || ''} • ${r['Status'] || ''}</div>
+        <div class="small text-muted-2">Funding: ${r['Funding (USD M)'] || '—'} • Impact: ${r['Impact Score'] || '—'}</div>
+        <div class="small">${r['Summary'] || ''}</div>
+      </div>`).join('');
+    eduResults.innerHTML = out || '<div class="text-muted">No results</div>';
+  } catch (e) {
+    eduResults.innerHTML = '<div class="text-danger">Failed to search.</div>';
+  }
+});
+</script>
+{% endblock %}

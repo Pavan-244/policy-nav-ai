@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="section-title mb-3">Healthcare Search</h2>
+<div class="card">
+  <div class="card-body">
+    <form id="hc-form" class="row g-3">
+      <div class="col-lg-6">
+        <label for="hc-q" class="form-label">Query</label>
+        <input id="hc-q" class="form-control" placeholder="e.g., heart disease medication" required />
+      </div>
+      <div class="col-6 col-lg-2">
+        <label for="hc-k" class="form-label">Top K</label>
+        <input id="hc-k" type="number" class="form-control" min="1" max="10" value="3" />
+      </div>
+      <div class="col-md-4 col-lg-2">
+        <label for="hc-condition" class="form-label">Condition</label>
+        <input id="hc-condition" class="form-control" placeholder="Condition" />
+      </div>
+      <div class="col-md-4 col-lg-2">
+        <label for="hc-doctor" class="form-label">Doctor</label>
+        <input id="hc-doctor" class="form-control" placeholder="Doctor" />
+      </div>
+      <div class="col-md-4 col-lg-2">
+        <label for="hc-hospital" class="form-label">Hospital</label>
+        <input id="hc-hospital" class="form-control" placeholder="Hospital" />
+      </div>
+      <div class="col-12">
+        <button class="btn btn-brand" type="submit">Search</button>
+        <a class="btn btn-outline-light ms-2" href="/visualizations">View Visualizations</a>
+        <a class="btn btn-outline-light ms-2" href="/healthcare/quantum">Quantum Search</a>
+      </div>
+    </form>
+  <div id="hc-results" class="mt-3" aria-live="polite"></div>
+  </div>
+</div>
+<script>
+const hcForm = document.getElementById('hc-form');
+const hcResults = document.getElementById('hc-results');
+
+hcForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hcResults.innerHTML = '<div class="text-muted">Searching…</div>';
+  const q = document.getElementById('hc-q').value.trim();
+  const k = document.getElementById('hc-k').value || 3;
+  const condition = document.getElementById('hc-condition').value.trim();
+  const doctor = document.getElementById('hc-doctor').value.trim();
+  const hospital = document.getElementById('hc-hospital').value.trim();
+  const params = new URLSearchParams({ query: q, top_k: k });
+  if (condition) params.append('condition', condition);
+  if (doctor) params.append('doctor', doctor);
+  if (hospital) params.append('hospital', hospital);
+  try {
+    const res = await fetch(`/search?${params.toString()}`);
+    const data = await res.json();
+    const out = (data.results || []).map(r => `
+      <div class="border-top pt-2 mt-2">
+        <div><strong>${r['Name'] || ''}</strong> <span class="badge badge-soft ms-2">${(r['Similarity']||0).toFixed(3)}</span></div>
+        <div class="text-muted-2">${r['Medical Condition'] || ''} • ${r['Doctor'] || ''} • ${r['Hospital'] || ''}</div>
+        <div class="small text-muted-2">${r['Date of Admission'] || ''} • Billing: ${r['Billing Amount'] || ''}</div>
+      </div>`).join('');
+    hcResults.innerHTML = out || '<div class="text-muted">No results</div>';
+  } catch (e) {
+    hcResults.innerHTML = '<div class="text-danger">Failed to search.</div>';
+  }
+});
+</script>
+{% endblock %}

@@ -3,8 +3,8 @@ import joblib
 from sklearn.metrics.pairwise import cosine_similarity
 
 # Paths to new Education Policy model artifacts
-EDU_POLICY_VECTORIZER_PATH = "app/models/education_policy_vectorizer.pkl"
-EDU_POLICY_MATRIX_PATH = "app/models/education_policy_tfidf_matrix.pkl"
+EDU_POLICY_VECTORIZER_PATH = "app/models/education_models/education_policy_vectorizer.pkl"
+EDU_POLICY_MATRIX_PATH = "app/models/education_models/education_policy_tfidf_matrix.pkl"
 
 # Load model artifacts at import time with graceful fallback
 try:
@@ -107,4 +107,87 @@ def search_records_education(
         status=None,
         year=None,
     )
+
+
+# -- Additional lightweight loader for the 'Quantum' TF-IDF artifacts
+# These point to the generic TF-IDF files included in the repo: a vectorizer
+# pickle and an X_tfidf numpy matrix. We provide a minimal search wrapper
+# that returns results with similarity scores and a short payload so the
+# frontend can display matches in a simplified view.
+from pathlib import Path
+import joblib
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity as _cosine_similarity
+
+QUANT_VECTORIZER_PATH = "app/models/quantum_models/tfidf_vectorizer.pkl"
+QUANT_MATRIX_PATH = "app/models/quantum_models/X_tfidf.npy"
+
+_quant_vectorizer = None
+_quant_matrix = None
+
+try:
+    _quant_vectorizer = joblib.load(QUANT_VECTORIZER_PATH)
+except Exception:
+    _quant_vectorizer = None
+
+try:
+    if Path(QUANT_MATRIX_PATH).exists():
+        _quant_matrix = np.load(QUANT_MATRIX_PATH)
+    else:
+        _quant_matrix = None
+except Exception:
+    _quant_matrix = None
+
+
+def search_quantum(query: str, top_k: int = 3):
+    """Search against the generic TF-IDF matrix (X_tfidf.npy) using the
+    provided vectorizer. Returns a list of dicts with minimal fields.
+    """
+    if _quant_vectorizer is None or _quant_matrix is None:
+        return []
+
+    try:
+        qv = _quant_vectorizer.transform([str(query).lower()])
+        sims = _cosine_similarity(qv, _quant_matrix).flatten()
+        idxs = sims.argsort()[::-1][:int(top_k)]
+        results = []
+
+        # Try to map indices to education policy metadata if available
+        # Many builds store the education df in education_policy_tfidf_matrix.pkl under key 'df'
+        edu_df = None
+        try:
+            edu_pkg = joblib.load(EDU_POLICY_MATRIX_PATH)
+            edu_df = edu_pkg.get('df')
+        except Exception:
+            edu_df = None
+
+        for i in idxs:
+            item = {"index": int(i), "similarity": float(sims[i])}
+            if edu_df is not None and not edu_df.empty and i < len(edu_df):
+                row = edu_df.iloc[int(i)]
+                # Attempt to extract common fields with case-insensitive lookup
+                def get_col(r, candidates):
+                    for c in r.index:
+                        if c.lower() in candidates:
+                            return r[c]
+                    return None
+
+                title = get_col(row, {'title', 'name'})
+                year = get_col(row, {'year'})
+                sector = get_col(row, {'sector'})
+                summary = get_col(row, {'summary', 'abstract', 'description'})
+
+                if title is not None:
+                    item['Title'] = str(title)
+                if year is not None:
+                    item['Year'] = str(year)
+                if sector is not None:
+                    item['Sector'] = str(sector)
+                if summary is not None:
+                    item['Summary'] = str(summary)
+
+            results.append(item)
+        return results
+    except Exception:
+        return []
 

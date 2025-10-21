@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Education Policies - Policy Explorer</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+</head>
+<body>
+    <main class="page">
+        <header class="hero">
+            <h1 class="title">Education Policies</h1>
+            <p class="subtitle">Search education reforms, teacher training and school development.</p>
+        </header>
+
+        <section class="search-area" aria-label="Search education policies">
+            <form hx-post="/search/{{ model_key }}" hx-target="#results-container" hx-swap="innerHTML">
+                <input id="query-input" name="query" type="search" placeholder="Search education policies..." value="education policies" />
+                <button type="submit">Search</button>
+            </form>
+            <div class="below-form-center">
+                <a class="card-btn secondary" href="/visualize/{{ model_key }}">Visualize dataset</a>
+            </div>
+        </section>
+
+        <div id="results-container" class="results"></div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-title">PolicyNav</p>
+            <p class="footer-text">AI-powered public policy navigation across multiple sectors</p>
+            <p class="footer-copyright">&copy; 2025 PolicyNav. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

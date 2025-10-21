@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>PolicyNav - Public Policy Navigation Using AI</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+</head>
+<body>
+    <main class="page">
+        <header class="hero">
+            <h1 class="title">PolicyNav</h1>
+            <p class="subtitle">Public Policy Navigation Using AI — Discover relevant policies across sectors with intelligent search and semantic understanding.</p>
+            <div class="subheads">
+                <h2>AI-Powered Policy Search</h2>
+                <h3>Smart matching • Multi-domain coverage • Instant insights</h3>
+            </div>
+        </header>
+
+        <section class="cards-grid" aria-label="Policy areas">
+            <article class="card card-health" tabindex="0">
+                <div class="icon">💊</div>
+                <h3>Health</h3>
+                <ul>
+                    <li>Public health programs</li>
+                    <li>Healthcare guidelines</li>
+                    <li>Medical policies</li>
+                    <li>Patient care standards</li>
+                    <li>Health regulations</li>
+                </ul>
+                <div class="card-actions">
+                    <a class="card-btn" href="/health">Explore</a>
+                    <a class="card-btn secondary" href="/visualize/nlp1">Visualize</a>
+                </div>
+            </article>
+
+            <article class="card card-education" tabindex="0">
+                <div class="icon">🎓</div>
+                <h3>Education</h3>
+                <ul>
+                    <li>Education reforms</li>
+                    <li>Teacher training</li>
+                    <li>School development</li>
+                    <li>Curriculum standards</li>
+                    <li>Student programs</li>
+                </ul>
+                <div class="card-actions">
+                    <a class="card-btn" href="/education">Explore</a>
+                    <a class="card-btn secondary" href="/visualize/nlp2">Visualize</a>
+                </div>
+            </article>
+
+            <article class="card card-finance" tabindex="0">
+                <div class="icon">💰</div>
+                <h3>Finance</h3>
+                <ul>
+                    <li>Fiscal policy</li>
+                    <li>Budget planning</li>
+                    <li>Grant programs</li>
+                    <li>Financial regulations</li>
+                    <li>Economic initiatives</li>
+                </ul>
+                <div class="card-actions">
+                    <a class="card-btn" href="/financial">Explore</a>
+                    <a class="card-btn secondary" href="/visualize/nlp3">Visualize</a>
+                </div>
+            </article>
+
+            <article class="card card-quantum" tabindex="0">
+                <div class="icon">🛸</div>
+                <h3>Quantum Education</h3>
+                <ul>
+                    <li>Quantum learning</li>
+                    <li>Advanced curricula</li>
+                    <li>Emerging frameworks</li>
+                    <li>Research programs</li>
+                    <li>Innovation policies</li>
+                </ul>
+                <div class="card-actions">
+                    <a class="card-btn" href="/quantum">Explore</a>
+                    <a class="card-btn secondary" href="/visualize/qnlp">Visualize</a>
+                </div>
+            </article>
+        </section>
+
+        <div id="results-container" class="results"></div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-title">PolicyNav</p>
+            <p class="footer-text">AI-powered public policy navigation across multiple sectors</p>
+            <p class="footer-copyright">&copy; 2025 PolicyNav. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

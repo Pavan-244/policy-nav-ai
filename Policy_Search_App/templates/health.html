@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Health Policies - Policy Explorer</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+</head>
+<body>
+    <main class="page">
+        <header class="hero">
+            <h1 class="title">Health Policies</h1>
+            <p class="subtitle">Find health policies, public health programs and guidelines.</p>
+        </header>
+
+        <section class="search-area" aria-label="Search health policies">
+            <form hx-post="/search/{{ model_key }}" hx-target="#results-container" hx-swap="innerHTML">
+                <input id="query-input" name="query" type="search" placeholder="Search health policies..." value="health policies" />
+                <button type="submit">Search</button>
+            </form>
+            <div class="below-form-center">
+                <a class="card-btn secondary" href="/visualize/{{ model_key }}">Visualize dataset</a>
+            </div>
+        </section>
+
+        <div id="results-container" class="results"></div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-title">PolicyNav</p>
+            <p class="footer-text">AI-powered public policy navigation across multiple sectors</p>
+            <p class="footer-copyright">&copy; 2025 PolicyNav. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

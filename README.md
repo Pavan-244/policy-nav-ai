@@ -241,7 +241,7 @@ We welcome contributions!
 
 | Home Page                | Education Result Page     | Quantum Result Page      | Finanice Result Page      | Visulization Result Page  | 
 | -------------------------| --------------------------| -------------------------| --------------------------| --------------------------|
-| ![Home](assets/home.png) | ![Home](assets/home.png)  | ![Home](assets/home.png) | ![Home](assets/home.png)  | ![Home](assets/home.png)  |
+| ![Home](assets/Home.png) | ![Home](assets/Education.png)  | ![Home](assets/quantum.png) | ![Home](assets/home.png)  | ![Home](assets/Visulization.png)  |
 ---
 
 ## 👨‍💻 **Author**

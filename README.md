@@ -251,9 +251,9 @@ We welcome contributions!
 | -------------------------  |
 | ![Home](assets/quantum.png)|
 
-| Finanice Result Page     | 
-| -------------------------|
-| ![Home](assets/Home.png) |
+| Finanice Result Page         | 
+| -------------------------    |
+| ![Home](assets/Finanice.png) |
 
 | Visulization Result Page        | 
 | --------------------------------|

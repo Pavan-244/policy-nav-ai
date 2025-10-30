@@ -239,9 +239,25 @@ We welcome contributions!
 
 > *(Add screenshots of your running app here — example placeholders)*
 
-| Home Page                | Education Result Page     | Quantum Result Page      | Finanice Result Page      | Visulization Result Page  | 
-| -------------------------| --------------------------| -------------------------| --------------------------| --------------------------|
-| ![Home](assets/Home.png) | ![Home](assets/Education.png)  | ![Home](assets/quantum.png) | ![Home](assets/home.png)  | ![Home](assets/Visulization.png)  |
+| Home Page                |
+| -------------------------|
+| ![Home](assets/Home.png) |
+
+| Education Result Page       |        
+| -------------------------   |
+|![Home](assets/Education.png)|
+
+| Quantum Result Page        |
+| -------------------------  |
+| ![Home](assets/quantum.png)|
+
+| Finanice Result Page     | 
+| -------------------------|
+| ![Home](assets/Home.png) |
+
+| Visulization Result Page        | 
+| --------------------------------|
+| ![Home](assets/Visulization.png)|
 ---
 
 ## 👨‍💻 **Author**

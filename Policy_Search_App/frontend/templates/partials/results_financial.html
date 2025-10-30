@@ -1,0 +1,116 @@
+{% if results and results|length > 0 %}
+  <div class="results-section">
+    <h2 class="results-title">Top Results</h2>
+    
+    {% for r in results %}
+      {% set headline = r.get('Headline', r.get('headline', '')) %}
+      {% set title = (headline|string if headline else 'Financial News').title() %}
+      <article class="result-card-enhanced">
+        <div class="result-header-enhanced">
+          <div class="result-title-section">
+            <h3 class="result-name-enhanced">{{ title }}</h3>
+          </div>
+          <div class="result-similarity-badge">
+            <span class="similarity-value-large">{{ '%.2f'|format((r.similarity|default(0)) * 100) }}%</span>
+            <span class="similarity-label-small">Similarity</span>
+          </div>
+        </div>
+        <div class="result-content-grid general-grid">
+          <div class="info-section">
+            <h4 class="section-title">Market Details</h4>
+            <div class="section-content">
+              {% if r.Date %}
+              <div class="info-row">
+                <span class="info-icon">📅</span>
+                <span class="info-label">Date:</span>
+                <span class="info-value">{{ r.Date }}</span>
+              </div>
+              {% endif %}
+              {% if r.Source %}
+              <div class="info-row">
+                <span class="info-icon">📰</span>
+                <span class="info-label">Source:</span>
+                <span class="info-value">{{ r.Source }}</span>
+              </div>
+              {% endif %}
+              {% if r.Market_Event %}
+              <div class="info-row">
+                <span class="info-icon">📊</span>
+                <span class="info-label">Market Event:</span>
+                <span class="info-value">{{ r.Market_Event }}</span>
+              </div>
+              {% endif %}
+              {% if r.Market_Index %}
+              <div class="info-row">
+                <span class="info-icon">📈</span>
+                <span class="info-label">Market Index:</span>
+                <span class="info-value">{{ r.Market_Index }}</span>
+              </div>
+              {% endif %}
+              {% if r.Index_Change_Percent %}
+              <div class="info-row">
+                <span class="info-icon">💹</span>
+                <span class="info-label">Index Change:</span>
+                <span class="info-value">{{ '%.2f'|format(r.Index_Change_Percent|float) }}%</span>
+              </div>
+              {% endif %}
+              {% if r.Trading_Volume %}
+              <div class="info-row">
+                <span class="info-icon">📊</span>
+                <span class="info-label">Trading Volume:</span>
+                <span class="info-value">{{ '%.2f'|format(r.Trading_Volume|float) }}</span>
+              </div>
+              {% endif %}
+              {% if r.Sentiment %}
+              <div class="info-row">
+                <span class="info-icon">😊</span>
+                <span class="info-label">Sentiment:</span>
+                <span class="info-value">{{ r.Sentiment }}</span>
+              </div>
+              {% endif %}
+              {% if r.Sector %}
+              <div class="info-row">
+                <span class="info-icon">🏢</span>
+                <span class="info-label">Sector:</span>
+                <span class="info-value">{{ r.Sector }}</span>
+              </div>
+              {% endif %}
+              {% if r.Impact_Level %}
+              <div class="info-row">
+                <span class="info-icon">⚡</span>
+                <span class="info-label">Impact Level:</span>
+                <span class="info-value">{{ r.Impact_Level }}</span>
+              </div>
+              {% endif %}
+              {% if r.Related_Company %}
+              <div class="info-row">
+                <span class="info-icon">🏦</span>
+                <span class="info-label">Related Company:</span>
+                <span class="info-value">{{ r.Related_Company }}</span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="info-section span-2">
+            <h4 class="section-title">News Details</h4>
+            <div class="section-content">
+              {% if r.Headline %}
+              <p class="content-summary"><strong>Headline:</strong> {{ r.Headline }}</p>
+              {% endif %}
+              {% if r.News_Url %}
+              <p class="content-summary">
+                <strong>Source URL:</strong> 
+                <a href="{{ r.News_Url }}" target="_blank" style="color: #4f46e5; text-decoration: underline;">{{ r.News_Url[:60] }}...</a>
+              </p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="no-results-container">
+    <p class="no-results">No results found. Try a different search query.</p>
+  </div>
+{% endif %}

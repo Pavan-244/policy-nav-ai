@@ -1,0 +1,108 @@
+{% if results and results|length > 0 %}
+  <div class="results-section">
+    <h2 class="results-title">Top Results (Quantum)</h2>
+    
+    {% for r in results %}
+      {% set title = (r.title|string if r.title else 'N/A').title() %}
+      <article class="result-card-enhanced">
+        <div class="result-header-enhanced">
+          <div class="result-title-section">
+            <h3 class="result-name-enhanced">{{ title }}</h3>
+          </div>
+          <div class="result-similarity-badge">
+            <span class="similarity-value-large">{{ '%.2f'|format((r.similarity|default(0)) * 100) }}%</span>
+            <span class="similarity-label-small">Quantum Similarity</span>
+          </div>
+        </div>
+        <div class="result-content-grid general-grid">
+          <div class="info-section">
+            <h4 class="section-title">Policy Details</h4>
+            <div class="section-content">
+              {% if r.policy_id %}
+              <div class="info-row">
+                <span class="info-icon">🆔</span>
+                <span class="info-label">Policy ID:</span>
+                <span class="info-value">{{ r.policy_id }}</span>
+              </div>
+              {% endif %}
+              {% if r.sector %}
+              <div class="info-row">
+                <span class="info-icon">🏢</span>
+                <span class="info-label">Sector:</span>
+                <span class="info-value">{{ r.sector }}</span>
+              </div>
+              {% endif %}
+              {% if r.region %}
+              <div class="info-row">
+                <span class="info-icon">🌍</span>
+                <span class="info-label">Region:</span>
+                <span class="info-value">{{ r.region }}</span>
+              </div>
+              {% endif %}
+              {% if r.year %}
+              <div class="info-row">
+                <span class="info-icon">📅</span>
+                <span class="info-label">Year:</span>
+                <span class="info-value">{{ r.year }}</span>
+              </div>
+              {% endif %}
+              {% if r.target_group %}
+              <div class="info-row">
+                <span class="info-icon">🎯</span>
+                <span class="info-label">Target Group:</span>
+                <span class="info-value">{{ r.target_group }}</span>
+              </div>
+              {% endif %}
+              {% if r.status %}
+              <div class="info-row">
+                <span class="info-icon">📊</span>
+                <span class="info-label">Status:</span>
+                <span class="info-value">{{ r.status }}</span>
+              </div>
+              {% endif %}
+              {% if r.funding_million_usd %}
+              <div class="info-row">
+                <span class="info-icon">💵</span>
+                <span class="info-label">Funding:</span>
+                <span class="info-value">${{ '%.2f'|format(r.funding_million_usd|float) }}M USD</span>
+              </div>
+              {% endif %}
+              {% if r.stakeholders %}
+              <div class="info-row">
+                <span class="info-icon">🤝</span>
+                <span class="info-label">Stakeholders:</span>
+                <span class="info-value">{{ r.stakeholders }}</span>
+              </div>
+              {% endif %}
+              {% if r.impact_score %}
+              <div class="info-row">
+                <span class="info-icon">⭐</span>
+                <span class="info-label">Impact Score:</span>
+                <span class="info-value">{{ r.impact_score }}</span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="info-section span-2">
+            <h4 class="section-title">Summary</h4>
+            <div class="section-content">
+              {% if r.summary %}
+              <p class="content-summary">{{ r.summary }}</p>
+              {% endif %}
+              {% if r.goals %}
+              <p class="content-summary"><strong>Goals:</strong> {{ r.goals }}</p>
+              {% endif %}
+              {% if r.full_text %}
+              <p class="content-summary"><strong>Details:</strong> {{ r.full_text }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="no-results-container">
+    <p class="no-results">No results found. Try a different search query.</p>
+  </div>
+{% endif %}

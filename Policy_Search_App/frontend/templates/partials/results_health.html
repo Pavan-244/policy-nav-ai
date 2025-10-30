@@ -1,0 +1,134 @@
+{% if results and results|length > 0 %}
+  <div class="results-section">
+    <h2 class="results-title">Top Results</h2>
+    
+    {% for r in results %}
+      {% set title = (r.Name|string if r.Name else 'N/A').title() %}
+      <article class="result-card-enhanced">
+        <div class="result-header-enhanced">
+          <div class="result-title-section">
+            <h3 class="result-name-enhanced">{{ title }}</h3>
+          </div>
+          <div class="result-similarity-badge">
+            <span class="similarity-value-large">{{ '%.2f'|format((r.similarity|default(0)) * 100) }}%</span>
+            <span class="similarity-label-small">Similarity</span>
+          </div>
+        </div>
+        <div class="result-content-grid general-grid">
+          <div class="info-section">
+            <h4 class="section-title">Patient Information</h4>
+            <div class="section-content">
+              {% if r.Age %}
+              <div class="info-row">
+                <span class="info-icon">🎂</span>
+                <span class="info-label">Age:</span>
+                <span class="info-value">{{ r.Age }} years</span>
+              </div>
+              {% endif %}
+              {% if r.Gender %}
+              <div class="info-row">
+                <span class="info-icon">👤</span>
+                <span class="info-label">Gender:</span>
+                <span class="info-value">{{ r.Gender }}</span>
+              </div>
+              {% endif %}
+              {% if r['Blood Type'] %}
+              <div class="info-row">
+                <span class="info-icon">🩸</span>
+                <span class="info-label">Blood Type:</span>
+                <span class="info-value">{{ r['Blood Type'] }}</span>
+              </div>
+              {% endif %}
+              {% if r['Medical Condition'] %}
+              <div class="info-row">
+                <span class="info-icon">🏥</span>
+                <span class="info-label">Condition:</span>
+                <span class="info-value">{{ r['Medical Condition'] }}</span>
+              </div>
+              {% endif %}
+              {% if r['Date of Admission'] %}
+              <div class="info-row">
+                <span class="info-icon">📅</span>
+                <span class="info-label">Admission:</span>
+                <span class="info-value">{{ r['Date of Admission'] }}</span>
+              </div>
+              {% endif %}
+              {% if r['Discharge Date'] %}
+              <div class="info-row">
+                <span class="info-icon">🚪</span>
+                <span class="info-label">Discharge:</span>
+                <span class="info-value">{{ r['Discharge Date'] }}</span>
+              </div>
+              {% endif %}
+              {% if r['Admission Type'] %}
+              <div class="info-row">
+                <span class="info-icon">🚑</span>
+                <span class="info-label">Admission Type:</span>
+                <span class="info-value">{{ r['Admission Type'] }}</span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="info-section">
+            <h4 class="section-title">Medical Details</h4>
+            <div class="section-content">
+              {% if r.Doctor %}
+              <div class="info-row">
+                <span class="info-icon">👨‍⚕️</span>
+                <span class="info-label">Doctor:</span>
+                <span class="info-value">{{ r.Doctor.title() }}</span>
+              </div>
+              {% endif %}
+              {% if r.Hospital %}
+              <div class="info-row">
+                <span class="info-icon">🏥</span>
+                <span class="info-label">Hospital:</span>
+                <span class="info-value">{{ r.Hospital }}</span>
+              </div>
+              {% endif %}
+              {% if r['Room Number'] %}
+              <div class="info-row">
+                <span class="info-icon">🛏️</span>
+                <span class="info-label">Room:</span>
+                <span class="info-value">{{ r['Room Number'] }}</span>
+              </div>
+              {% endif %}
+              {% if r.Medication %}
+              <div class="info-row">
+                <span class="info-icon">💊</span>
+                <span class="info-label">Medication:</span>
+                <span class="info-value">{{ r.Medication }}</span>
+              </div>
+              {% endif %}
+              {% if r['Test Results'] %}
+              <div class="info-row">
+                <span class="info-icon">🔬</span>
+                <span class="info-label">Test Results:</span>
+                <span class="info-value">{{ r['Test Results'] }}</span>
+              </div>
+              {% endif %}
+              {% if r['Insurance Provider'] %}
+              <div class="info-row">
+                <span class="info-icon">🛡️</span>
+                <span class="info-label">Insurance:</span>
+                <span class="info-value">{{ r['Insurance Provider'] }}</span>
+              </div>
+              {% endif %}
+              {% if r['Billing Amount'] %}
+              <div class="info-row">
+                <span class="info-icon">💰</span>
+                <span class="info-label">Billing:</span>
+                <span class="info-value">${{ '%.2f'|format(r['Billing Amount']|float) }}</span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="no-results-container">
+    <p class="no-results">No results found. Try a different search query.</p>
+  </div>
+{% endif %}

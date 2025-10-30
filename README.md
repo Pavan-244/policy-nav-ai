@@ -86,32 +86,6 @@ deactivate
 
 This safely exits the virtual environment and returns your terminal to the normal system state.
 
-📁 Project Structure
-policy-nav-ai/
-│
-├── Policy_Search_App/
-│   ├── backend/
-│   │   ├── main.py
-│   │   ├── models/
-│   │   ├── templates/
-│   │   └── static/
-│   │
-│   ├── frontend/
-│   │   ├── templates/
-│   │   ├── static/
-│   │   └── datasets/
-│
-├── models/
-│   ├── education_models/
-│   ├── financial_models/
-│   ├── healthcare_models/
-│   └── quantum_models/
-│
-├── datasets/
-├── requirements.txt
-├── README.md
-└── .gitignore
-
 🧰 Tech Stack
 Component	Technology
 Backend	FastAPI

@@ -239,10 +239,9 @@ We welcome contributions!
 
 > *(Add screenshots of your running app here — example placeholders)*
 
-| Home Page                        | Health Result Page                   || Education Result Page                        | Quantum Result Page                   || Finanice Result Page                        | Visulization Result Page                   |
-| -------------------------------- | ------------------------------------ || -------------------------------- | ------------------------------------ || -------------------------------- | ------------------------------------ |
-| ![Home](assets/home-example.png) https://res.cloudinary.com/dnkxx5ouu/image/upload/v1761819167/haupklpzz25uoprws7zj.png| ![Search](assets/search-example.png) |
-
+| Home Page                | Education Result Page     | Quantum Result Page      | Finanice Result Page      | Visulization Result Page  | 
+| -------------------------| --------------------------| -------------------------| --------------------------| --------------------------|
+| ![Home](assets/home.png) | ![Home](assets/home.png)  | ![Home](assets/home.png) | ![Home](assets/home.png)  | ![Home](assets/home.png)  |
 ---
 
 ## 👨‍💻 **Author**

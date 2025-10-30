@@ -21,28 +21,26 @@ This project demonstrates how machine learning models can be integrated into a F
 
 Follow these steps exactly in order to set up and run the project successfully:
 
-🧩 Step 1: Create a Virtual Environment
+🧩 Step 1: 
+Create a Virtual Environment
 
 Create a new Python virtual environment in your project directory:
-
 python -m venv virtual
 
-📂 Step 2: Navigate into the Virtual Environment Folder
-
+📂 Step 2: 
+Navigate into the Virtual Environment Folder
 Move into the newly created virtual environment:
-
 cd virtual
 
-🌐 Step 3: Clone the GitHub Repository
-
+🌐 Step 3:
+Clone the GitHub Repository
 Clone this repository inside the virtual environment folder:
-
 git clone https://github.com/<your-username>/policy-nav-ai.git
-
-
 Replace <your-username> with your actual GitHub username.
 
-⚡ Step 4: Activate the Virtual Environment
+⚡ Step 4:
+Activate the Virtual Environment
+
 🪟 On Windows:
 cd Scripts
 activate
@@ -50,47 +48,39 @@ activate
 🐧 On macOS/Linux:
 source bin/activate
 
-
 Once activated, your terminal will show (virtual) at the beginning of the line.
 
-📦 Step 5: Install Project Dependencies
-
+📦 Step 5:
+Install Project Dependencies
 After activation, install all required libraries using:
-
 pip install -r requirements.txt
-
-
 This command installs FastAPI, Uvicorn, Pandas, NumPy, Scikit-learn, and other dependencies listed in requirements.txt.
 
-🧭 Step 6: Navigate to the Backend Directory
-
+🧭 Step 6:
+Navigate to the Backend Directory
 After installing the dependencies, move to the backend folder:
 
 cd ..
 cd Policy_Search_App/backend
 
-🚀 Step 7: Run the FastAPI Server
-
+🚀 Step 7:
+Run the FastAPI Server
 Start the development server using:
-
 python -m uvicorn main:app --reload
 
-
 If everything is set up correctly, you’ll see:
-
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 
-🌍 Step 8: Open the Application
-
+🌍 Step 8:
+Open the Application
 Now open your web browser and go to:
 👉 http://127.0.0.1:8000
 
 You should see the Policy Nav AI interface running successfully.
 
-🔚 Step 9: Deactivate the Virtual Environment
-
+🔚 Step 9:
+Deactivate the Virtual Environment
 Once you finish testing or development, deactivate the environment using:
-
 deactivate
 
 
@@ -132,9 +122,7 @@ ML Models	scikit-learn, Qiskit, NumPy, Pandas
 💡 Example Usage
 
 Choose a domain (Education, Healthcare, Finance, or Quantum).
-
 Enter a keyword or phrase related to a policy.
-
 The AI model retrieves and ranks the most relevant policy information.
 
 🧾 Commands Summary
@@ -146,7 +134,7 @@ Activate environment (Windows)	cd Scripts && activate
 Install dependencies	pip install -r requirements.txt
 Run backend server	python -m uvicorn main:app --reload
 Deactivate environment	deactivate
-👨‍💻 Author
 
+👨‍💻 Author
 Pavan Kumar Bushigampala
 🧩 Data Science & AI Enthusiast | Full Stack Developer | FastAPI + React Developer
